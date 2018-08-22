@@ -2,6 +2,7 @@ require("dotenv").config();
 const request = require("request");
 const Spotify = require("node-spotify-api");
 const inquirer = require("inquirer");
+const moment = require("moment");
 const keys = require("./keys.js");
 const spotify = new Spotify(keys);
 // console.log(keys);
@@ -9,11 +10,24 @@ const spotify = new Spotify(keys);
 //Function Declarations
 
 const bandsInTown = function (artist) {
-  const queryURL = `https://rest.bandsintown.com/artsts/${artist}/events?app_id=codingbootcamp`;
+  console.log(
+`
+    ____                     __         ____          ______                     
+   / __ ) ____ _ ____   ____/ /_____   /  _/____     /_  __/____  _      __ ____ 
+  / __  |/ __ '// __ \\ / __  // ___/   / / / __ \\     / /  / __ \\| | /| / // __ \\
+ / /_/ // /_/ // / / // /_/ /(__  )  _/ / / / / /    / /  / /_/ /| |/ |/ // / / /
+/_____/ \\__,_//_/ /_/ \\__,_//____/  /___//_/ /_/    /_/   \\____/ |__/|__//_/ /_/ 
+`
+    );
+  const queryURL = `https://rest.bandsintown.com/artists/${artist}/events?app_id=00998e22b3acfbe3849f8bd2ca871017`;
   request(queryURL, function (err, response, body){
-    // console.log("Error:", err);
-    // console.log("Status Code", response);
-    console.log("Body:", body);
+    const parsed = JSON.parse(body);
+    console.log(`Show Lineup: ${parsed[0].lineup}`);
+    const date = moment(parsed[0].datetime, "YYYY-MM-DD hh:mm");
+    console.log(`Date: ${date}`);
+    console.log(`Venue: ${parsed[0].venue.name}`);
+    console.log(`Location: ${parsed[0].venue.city}, ${parsed[0].venue.region}, ${parsed[0].venue.country}`);
+    main();
   });
 };
 
@@ -32,18 +46,21 @@ const spotifyAPI = function (song) {
     
     console.log(
 `
-=========================================
- ___   ___   ___  _____ _____  ____ .   .
-[___  |___] |   |   |     |   |__    \\ /
- ___] |     |___|   |   __|__ |       |
- 
-=========================================
+   _____                __   _  ____      
+  / ___/ ____   ____   / /_ (_)/ __/__  __
+  \\__ \\ / __ \\ / __ \\ / __// // /_ / / / /
+ ___/ // /_/ // /_/ // /_ / // __// /_/ / 
+/____// .___/ \\____/ \\__//_//_/   \\__, /  
+     /_/                         /____/   
 `
-    )
-    console.log(data.tracks.items[0].artists.name);
-    console.log(data.tracks.items[0].name);
-    console.log(data.tracks.items[0].external_urls.spotify);
-    console.log(data.tracks.items[0].album.name);
+    );
+
+    console.log(`Artist: ${data.tracks.items[0].artists[0].name}`);
+    console.log(`Song: ${data.tracks.items[0].name}`);
+    console.log(`Album: ${data.tracks.items[0].album.name}`);
+    console.log(`Listen on Spotify: ${data.tracks.items[0].external_urls.spotify}`);
+    main();
+
   });
 };
 
@@ -53,13 +70,11 @@ const ombdAPI = function (movie) {
     const parsed = JSON.parse(body);
     console.log(
 `
-==========================
-  ____   _    _ ____   ___
-/    \\  |\\  /| |   \\  |__]
-|    |  | \\/ | |    | |  \\
-\\____/  |    | |___/  |__/
-
-==========================
+   ____   __  ___ ____   ____ 
+  / __ \\ /  |/  // __ \\ / __ )
+ / / / // /|_/ // / / // __  |
+/ /_/ // /  / // /_/ // /_/ / 
+\\____//_/  /_//_____//_____/ 
 `
     )
     console.log(`Title: ${parsed.Title}`);
@@ -70,16 +85,23 @@ const ombdAPI = function (movie) {
     console.log(`Language: ${parsed.Language}`);
     console.log(`Plot: ${parsed.Plot}`);
     console.log(`Actors: ${parsed.Actors}`);
+    main();
+
   });
 };
 
 const main = function () {
+  console.log(
+    `
+=============================================
+    `
+  );
   inquirer.prompt([
     {
       type: "list",
       name: "choose",
       message: "Which API would you like to do?",
-      choices: ["Bands In Town", "Spotify", "OMBD", "I'm Feeling Lucky"]
+      choices: ["Bands In Town", "Spotify", "OMBD", "I'm Feeling Lucky", "Exit"]
     }
   ]).then(function(response){
     console.log(response.choose);
@@ -102,22 +124,32 @@ const main = function () {
             message: "What song would you like to search for?",
           }
         ]).then(function(response){
+          if (response.song === ""){
+            response.song = "The Sign"
+          }
           spotifyAPI(response.song);
         });
         break;
-      case "OMDB":
+      case "OMBD":
         inquirer.prompt([
           {
             name: "movie",
             message: "What movie would you like to search for?",
           }
         ]).then(function(response){
+          if (response.movie === ""){
+            response.movie = "Mr. Nobody"
+          };
           ombdAPI(response.movie);
         });
         break;
       case "I'm Feeling Lucky":
+        console.log("Random Function goes here");
         break;
-    }
+      case "Exit":
+        return false;
+        break;
+    };
   });
 };
 main();
