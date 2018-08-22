@@ -121,3 +121,9 @@ const main = function () {
   });
 };
 main();
+
+//PUT THESE INTO THE .ENV
+// # Spotify API keys
+
+// SPOTIFY_ID=e964894de0494f65989af5725673f2ac
+// SPOTIFY_SECRET=0d0597e5b25d4171b13dd107223879f8
