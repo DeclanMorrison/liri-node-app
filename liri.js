@@ -23,7 +23,7 @@ const bandsInTown = function (artist) {
   request(queryURL, function (err, response, body){
     const parsed = JSON.parse(body);
     console.log(`Show Lineup: ${parsed[0].lineup}`);
-    const date = moment(parsed[0].datetime, "YYYY-MM-DD hh:mm");
+    const date = moment(parsed[0].datetime, "YYYY-MM-DD");
     console.log(`Date: ${date}`);
     console.log(`Venue: ${parsed[0].venue.name}`);
     console.log(`Location: ${parsed[0].venue.city}, ${parsed[0].venue.region}, ${parsed[0].venue.country}`);
@@ -153,9 +153,3 @@ const main = function () {
   });
 };
 main();
-
-//PUT THESE INTO THE .ENV
-// # Spotify API keys
-
-// SPOTIFY_ID=e964894de0494f65989af5725673f2ac
-// SPOTIFY_SECRET=0d0597e5b25d4171b13dd107223879f8
