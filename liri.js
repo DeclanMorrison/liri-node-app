@@ -3,6 +3,7 @@ const request = require("request");
 const Spotify = require("node-spotify-api");
 const inquirer = require("inquirer");
 const moment = require("moment");
+const fs = require("fs");
 const keys = require("./keys.js");
 const spotify = new Spotify(keys);
 // console.log(keys);
@@ -144,7 +145,25 @@ const main = function () {
         });
         break;
       case "I'm Feeling Lucky":
-        console.log("Random Function goes here");
+        fs.readFile("./random.txt", "utf-8", (err, data) => {
+          const dataSplit = data.split("\r\n");
+          const rand = Math.floor(Math.random() * 3);
+          const chosen = dataSplit[rand];
+          const chosenSplit = chosen.split(" ");
+          const chosenFunction = chosenSplit.shift();
+          const chosenTerm = chosenSplit.join(" ");
+          switch (chosenFunction){
+            case "Spotify":
+              spotifyAPI(chosenTerm);
+              break;
+            case "BandsInTown":
+              bandsInTown(chosenTerm);
+              break;
+            case "OMBD":
+              ombdAPI(chosenTerm);
+              break;
+          };
+        });
         break;
       case "Exit":
         return false;
